@@ -3,33 +3,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="52dp"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_vertical_margin"
+    android:background="@color/colorItemBackground">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_map"
-        android:id="@+id/imageView" />
+        android:id="@+id/imageIcon"
+        android:layout_centerVertical="true"
+        android:minHeight="24dp"
+        android:minWidth="24dp"
+        android:backgroundTintMode="src_over"
+        android:src="@drawable/ic_map" />
+
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageDownload"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:minHeight="24dp"
+        android:minWidth="24dp"
+        app:srcCompat="@drawable/ic_action_import"
+        android:backgroundTintMode="src_in" />
 
     <TextView
         android:id="@+id/tvCountry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/imageView"
-        android:layout_toEndOf="@+id/imageView"
+        android:layout_toRightOf="@+id/imageIcon"
+        android:layout_toEndOf="@+id/imageIcon"
+        android:layout_toLeftOf="@id/imageDownload"
+        android:paddingStart="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_vertical_margin"
         android:layout_centerVertical="true"
         tools:text="country"
         android:textSize="20sp"/>
 
-    <Button
-        android:id="@+id/btnImport"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/ic_action_import"/>
 
 
 

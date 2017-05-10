@@ -1,6 +1,8 @@
 package ua.itstep.android11.mapsdownload;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -184,9 +186,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Log.d(TAG, getClass().getSimpleName() +".onBindViewHolder() "+ position);
 
-        holder.imageView.setImageResource(R.drawable.ic_map);
+        holder.imageView.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
+                //setImageResource(R.drawable.ic_map);
         holder.tvCountry.setText(regionData.get(position).get(ATTR_COUNTRY));
-        holder.btnImport.setBackgroundResource(R.drawable.ic_action_import);
+        holder.imageDownload.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -197,24 +200,35 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private final View mView;
+        //private final View mView;
         private final TextView tvCountry;
-        private Button btnImport;
+        //private Button btnImport;
         private ImageView imageView;
+        private ImageView imageDownload;
 
         ViewHolder(View view) {
             super(view);
-            mView = view;
-            imageView = (ImageView) view.findViewById(R.id.imageView);
+            //mView = view;
+            imageView = (ImageView) view.findViewById(R.id.imageIcon);
             tvCountry = (TextView) view.findViewById(R.id.tvCountry);
-            btnImport = (Button) view.findViewById(R.id.btnImport);
+            imageDownload = (ImageView) view.findViewById(R.id.imageDownload);
 
+            imageDownload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, getClass().getSimpleName() +".onClick ");
+                }
+            });
+
+            /*
+            btnImport = (Button) view.findViewById(R.id.btnImport);
             btnImport.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, getClass().getSimpleName() +".onClick ");
                 }
             });
+            */
 
             Log.d(TAG, getClass().getSimpleName() +"  constructor () ");
 

@@ -27,7 +27,7 @@ public class AdapterHelper {
     ArrayList<Map<String, String>> oceaniaData;
     ArrayList<ArrayList<Map<String, String>>> allChildData;
     Map<String, String> m;
-    SimpleExpandableListAdapter adapter;
+    ExpandableListAdapter adapter;
     Context ctx;
     Locale locale;
 
@@ -55,7 +55,7 @@ public class AdapterHelper {
         ctx = context;
     }
 
-    SimpleExpandableListAdapter getAdapter(){
+    ExpandableListAdapter getAdapter(){
 
         //fill group collection
         regionsData = new ArrayList<Map<String, String>>();
@@ -66,8 +66,7 @@ public class AdapterHelper {
             regionsData.add(m);
         }
 
-        String[] groupFrom = new String[]{ATTR_REGION};
-        int[] groupTo = new int[]{android.R.id.text1};
+
 
         africaData = new ArrayList<Map<String, String>>();
         americasData = new ArrayList<Map<String, String>>();
@@ -129,20 +128,26 @@ public class AdapterHelper {
         allChildData.add(oceaniaData);
 
 
+        String[] groupFrom = new String[]{ATTR_REGION};
+        int[] groupTo = new int[]{android.R.id.text1};
+
         String[] childFrom = new String[]{ATTR_SUBREGION};
         int[] childTo = new int[]{android.R.id.text1};
 
-        adapter = new SimpleExpandableListAdapter(
+
+
+        adapter = new ExpandableListAdapter(
                 ctx,
                 regionsData,
-                android.R.layout.simple_expandable_list_item_1,
+                R.layout.expandable_list_item,
                 groupFrom,
                 groupTo,
                 allChildData,
-                android.R.layout.simple_list_item_1,
+                R.layout.region_list_item,
                 childFrom,
                 childTo
         );
+
 
 
         return adapter;

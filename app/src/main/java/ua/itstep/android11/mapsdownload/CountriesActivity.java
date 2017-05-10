@@ -11,6 +11,7 @@ import java.util.Locale;
 
 public class CountriesActivity extends AppCompatActivity {
     private final static String TAG = "MAPS >>>>>>>>";
+
     private final String ATTR_CODE = "M49code";
 
     private RecyclerViewAdapter lvAdapter;
@@ -28,7 +29,6 @@ public class CountriesActivity extends AppCompatActivity {
 
         lvCountries = (RecyclerView) findViewById(R.id.listCountries);
         lvAdapter = new RecyclerViewAdapter(this, code);
-        lvAdapter.setHasStableIds(true);
         lvCountries.setAdapter(lvAdapter);
 
         /*

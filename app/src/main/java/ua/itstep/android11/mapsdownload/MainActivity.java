@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private final String ATTR_CODE = "M49code";
 
      ExpandableListView elvMain;
-     SimpleExpandableListAdapter adapter;
+     ExpandableListAdapter adapter;
      AdapterHelper adptrHelper;
      TextView tvDevMemory;
      TextView tvFree;
