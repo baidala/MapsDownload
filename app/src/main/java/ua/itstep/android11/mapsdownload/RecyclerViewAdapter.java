@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -164,8 +165,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             regionData.add(item);
         }
 
-        locale = new Locale("", "155");
-        Log.d(TAG, "CCCCCcountry = " + locale.toString());
+        //locale = new Locale("", "155");
+        //Log.d(TAG, "CCCCCcountry = " + locale.toString());
 
 
     }
@@ -190,6 +191,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 //setImageResource(R.drawable.ic_map);
         holder.tvCountry.setText(regionData.get(position).get(ATTR_COUNTRY));
         holder.imageDownload.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
+
     }
 
     @Override
@@ -201,10 +203,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder {
         //private final View mView;
-        private final TextView tvCountry;
+        private TextView tvCountry;
         //private Button btnImport;
         private ImageView imageView;
         private ImageView imageDownload;
+        private ProgressBar progressBar;
 
         ViewHolder(View view) {
             super(view);
@@ -212,11 +215,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             imageView = (ImageView) view.findViewById(R.id.imageIcon);
             tvCountry = (TextView) view.findViewById(R.id.tvCountry);
             imageDownload = (ImageView) view.findViewById(R.id.imageDownload);
+            progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
             imageDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, getClass().getSimpleName() +".onClick ");
+                    Log.d(TAG, getClass().getSimpleName() +" ViewHolder.onClick ");
+                    progressBar.setProgress(30);
                 }
             });
 

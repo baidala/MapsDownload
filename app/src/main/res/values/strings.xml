@@ -3,4 +3,7 @@
     <string name="dev_memory">Device memory</string>
     <string name="free">Free</string>
     <string name="size">00 GB</string>
+    <string name="progress">%</string>
+    <string name="country">Germany</string>
+    <string name="download">Downloading</string>
 </resources>

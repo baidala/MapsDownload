@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -14,8 +15,11 @@ public class CountriesActivity extends AppCompatActivity {
 
     private final String ATTR_CODE = "M49code";
 
-    private RecyclerViewAdapter lvAdapter;
-    private RecyclerView lvCountries;
+    RecyclerViewAdapter lvAdapter;
+    RecyclerView lvCountries;
+    TextView tvDownload;
+    TextView tvCountry;
+    TextView tvProgress;
 
 
     @Override
@@ -30,6 +34,15 @@ public class CountriesActivity extends AppCompatActivity {
         lvCountries = (RecyclerView) findViewById(R.id.listCountries);
         lvAdapter = new RecyclerViewAdapter(this, code);
         lvCountries.setAdapter(lvAdapter);
+
+        tvDownload = (TextView) findViewById(R.id.tvDownload);
+        tvDownload.setText(R.string.download);
+
+        tvCountry = (TextView) findViewById(R.id.tvCountry);
+        tvCountry.setText(R.string.country);
+
+        tvProgress = (TextView) findViewById(R.id.tvProgress);
+        tvProgress.setText( R.string.progress );
 
         /*
         Locale locale = new Locale("", "276");

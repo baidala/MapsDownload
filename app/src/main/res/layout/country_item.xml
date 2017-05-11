@@ -20,33 +20,43 @@
         android:src="@drawable/ic_map" />
 
 
+    <LinearLayout
+        android:id="@+id/ll"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/imageIcon"
+        android:layout_toEndOf="@+id/imageIcon"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvCountry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_vertical_margin"
+            tools:text="country"
+            android:textSize="16sp"/>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_vertical_margin"
+            android:id="@+id/progressBar" />
+    </LinearLayout>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageDownload"
         android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:minHeight="24dp"
         android:minWidth="24dp"
         app:srcCompat="@drawable/ic_action_import"
-        android:backgroundTintMode="src_in" />
-
-    <TextView
-        android:id="@+id/tvCountry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/imageIcon"
-        android:layout_toEndOf="@+id/imageIcon"
-        android:layout_toLeftOf="@id/imageDownload"
-        android:paddingStart="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_vertical_margin"
-        android:layout_centerVertical="true"
-        tools:text="country"
-        android:textSize="20sp"/>
-
-
+        android:backgroundTintMode="src_in"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>
