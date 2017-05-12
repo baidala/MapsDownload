@@ -207,14 +207,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() "+ position);
+        //Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() "+ position);
 
         //downloadTask = new DownloadTask(context, holder);
 
         holder.m49code = regionData.get(position).get(ATTR_CODE);
         holder.imageView.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
         holder.tvCountry.setText(regionData.get(position).get(ATTR_COUNTRY));
-
+        Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() " + position + "  "+ isItemDownloading(position));
         if (isItemDownloading(position)) {
             holder.imageDownload.setImageResource(R.drawable.ic_action_remove_dark);
             holder.progressBar.setVisibility(View.VISIBLE);
@@ -245,12 +245,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
     private void startDownload(ViewHolder holder, int pos){
         String m49code = regionData.get(pos).get(ATTR_CODE);
+        setItemDownloading(pos, true);
         getDownloadTask(holder).execute(mapUrl.get(m49code));
     }
 
     private void cancelDownload(ViewHolder holder, int pos){
-        Log.d(Prefs.TAG, " cancelDownload "+ pos);
+        Log.d(Prefs.TAG, " cancelDownload: "+ pos);
+        setItemDownloading(pos, false);
         getDownloadTask(holder).cancel(true);
+
     }
 
     private boolean isItemDownloading(int pos) {
@@ -381,6 +384,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             } catch (MalformedURLException ex) {
                 Log.e(Prefs.TAG, "Parsing URL failed: "+ url);
+                // for testing only
+                long total = 100000;
+                int count= 0;
+                while (count < total){
+                    publishProgress( (int)(count * 100 / total) );
+                    count++;
+                    Log.d(Prefs.TAG, "count: " +count);
+                }
+
             } catch (IOException ex) {
                 Log.d(Prefs.TAG, "URL does not exist: "+ url);
             } catch (OutOfMemoryError ex) {
@@ -393,18 +405,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 if (conn != null) conn.disconnect();
 
+
+
+
+
             }
 
-            /* for testing only
-            long total = 100000;
-            int count= 0;
 
-            while (count < total){
-                publishProgress( (int)(count * 100 / total) );
-                count++;
-                Log.d(Prefs.TAG, "count: " +count);
-            }
-            */
 
             return null;
         }
@@ -430,7 +437,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             vHolder.progressBar.setVisibility(View.VISIBLE);
             vHolder.imageDownload.setImageResource(R.drawable.ic_action_remove_dark);
             vHolder.imageDownload.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
-            setItemDownloading(vHolder.getAdapterPosition(), true);
+            //setItemDownloading(vHolder.getAdapterPosition(), true);
+            Log.d(Prefs.TAG, " onPreExecute: " + vHolder.getAdapterPosition()+" "+ isItemDownloading(vHolder.getAdapterPosition()));
 
         }
 
@@ -458,7 +466,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             vHolder.imageView.getDrawable().mutate().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
 
             activity.frameLayout.setVisibility(View.GONE);
-            setItemDownloading(vHolder.getAdapterPosition(), false);
+            //setItemDownloading(vHolder.getAdapterPosition(), false);
         }
 
 
