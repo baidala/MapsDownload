@@ -264,12 +264,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        //private final View mView;
         private TextView tvCountry;
         private ImageView imageView;
         private ImageView imageDownload;
         private ProgressBar progressBar;
-        //private boolean inProgress = false;
         private String m49code;
 
 
@@ -325,10 +323,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         @Override
         protected String doInBackground(String... url) {
+            Log.d(Prefs.TAG, "doInBackground url: " + url[0]);
             InputStream inputStream = null;
             OutputStream outputStream = null;
             HttpURLConnection conn = null;
-            /*
+
             try {
                 conn = (HttpURLConnection) new URL(url[0]).openConnection();
                 conn.setDoInput(true);
@@ -346,6 +345,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 }
 
                 int fileLength = conn.getContentLength(); //might be -1  = no response
+                Log.d(Prefs.TAG, getClass().getSimpleName() +" doInBackground fileLength: " + fileLength);
                 File dest = new File( context.getFilesDir(), new File(url[0]).getName() );
                 inputStream = new BufferedInputStream(conn.getInputStream());
                 outputStream = new FileOutputStream(dest);
@@ -394,16 +394,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 if (conn != null) conn.disconnect();
 
             }
-            */
+
+            /* for testing only
             long total = 100000;
             int count= 0;
 
             while (count < total){
                 publishProgress( (int)(count * 100 / total) );
                 count++;
-                //Thread.sleep(200);
                 Log.d(Prefs.TAG, "count: " +count);
             }
+            */
 
             return null;
         }
