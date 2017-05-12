@@ -14,7 +14,6 @@ import java.util.Map;
  */
 
 public class AdapterHelper {
-    private final static String TAG = "MAPS >>>>>>>>";
     final String ATTR_REGION = "region";
     final String ATTR_SUBREGION = "subregion";
     final String ATTR_CODE = "M49code";
@@ -155,7 +154,7 @@ public class AdapterHelper {
 
     String getChildCode(int groupPos, int childPos){
         String res = ((Map<String, String>)(adapter.getChild(groupPos, childPos))).get(ATTR_CODE);
-        Log.d(TAG, getClass().getSimpleName() + ".getChildCode = " + res);
+        Log.d(Prefs.TAG, getClass().getSimpleName() + ".getChildCode = " + res);
 
         return res;
     }

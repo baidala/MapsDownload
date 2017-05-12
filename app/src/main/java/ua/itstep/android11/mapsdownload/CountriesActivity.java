@@ -5,13 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Locale;
 
 
 public class CountriesActivity extends AppCompatActivity {
-    private final static String TAG = "MAPS >>>>>>>>";
 
     private final String ATTR_CODE = "M49code";
 
@@ -20,6 +21,8 @@ public class CountriesActivity extends AppCompatActivity {
     TextView tvDownload;
     TextView tvCountry;
     TextView tvProgress;
+    ProgressBar progressBar;
+    FrameLayout frameLayout;
 
 
     @Override
@@ -29,7 +32,7 @@ public class CountriesActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String code = intent.getStringExtra(ATTR_CODE);
-        Log.d(TAG, getClass().getSimpleName() + ".onCreate  code = " + code);
+        Log.d(Prefs.TAG, getClass().getSimpleName() + ".onCreate  code = " + code);
 
         lvCountries = (RecyclerView) findViewById(R.id.listCountries);
         lvAdapter = new RecyclerViewAdapter(this, code);
@@ -44,6 +47,9 @@ public class CountriesActivity extends AppCompatActivity {
         tvProgress = (TextView) findViewById(R.id.tvProgress);
         tvProgress.setText( R.string.progress );
 
+        progressBar = (ProgressBar)findViewById(R.id.pBar);
+
+        frameLayout = (FrameLayout)findViewById(R.id.frame);
         /*
         Locale locale = new Locale("", "276");
         Log.d(TAG, getClass().getSimpleName() + ".CCCCCcountry = " + locale.getDisplayCountry());

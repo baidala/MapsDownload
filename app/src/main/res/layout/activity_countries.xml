@@ -10,10 +10,11 @@
     android:theme="@style/AppTheme">
 
     <FrameLayout
+        android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -54,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tvDownload"
-                android:id="@+id/progressBar"
+                android:id="@+id/pBar"
                 android:progress="10"
                 android:max="100" />
         </RelativeLayout>

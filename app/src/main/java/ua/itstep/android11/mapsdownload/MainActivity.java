@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
-    private final static String TAG = "MAPS >>>>>>>>";
+
     private final String ATTR_CODE = "M49code";
 
      ExpandableListView elvMain;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, getClass().getSimpleName() + ".onCreate");
+        Log.d(Prefs.TAG, getClass().getSimpleName() + ".onCreate");
 
         setContentView(R.layout.activity_main);
 
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         elvMain.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                Log.d(TAG, "onChildClick  groupPosition = "+groupPosition +"  childPosition = "+ childPosition + " code = " + adptrHelper.getChildCode(groupPosition, childPosition));
+                Log.d(Prefs.TAG, "onChildClick  groupPosition = "+groupPosition +"  childPosition = "+ childPosition + " code = " + adptrHelper.getChildCode(groupPosition, childPosition));
                 Intent intent = new Intent(getApplicationContext(), CountriesActivity.class);
                 intent.putExtra( ATTR_CODE, adptrHelper.getChildCode(groupPosition, childPosition) );
                 startActivity(intent);
