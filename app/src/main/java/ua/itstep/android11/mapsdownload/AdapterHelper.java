@@ -32,22 +32,22 @@ public class AdapterHelper {
 
 
     //regions UN M49 codes
-    String[] regionCodes = new String[]{"002", "019", "142", "150", "009"};
+    String[] regionCodes = new String[]{Prefs.regionAfrica, Prefs.regionAmericas, Prefs.regionAsia, Prefs.regionEurope, Prefs.regionOceania};
 
     //Africa
-    String[] regionAfrica = new String[] {"015", "014", "017", "018", "011" };
+    String[] regionAfrica = new String[] {Prefs.regionNorthernAfrica, Prefs.regionEasternAfrica, Prefs.regionMiddleAfrica, Prefs.regionSouthernAfrica, Prefs.regionWesternAfrica };
 
     //Americas
-    String[] regionAmericas = new String[] {"029", "013", "005", "021" };
+    String[] regionAmericas = new String[] {Prefs.regionCaribbean, Prefs.regionCentralAmerica, Prefs.regionSouthAmerica, Prefs.regionNorthernAmerica };
 
     //Asia
-    String[] regionAsia = new String[] {"143", "030", "035", "034", "145"};
+    String[] regionAsia = new String[] {Prefs.regionCentralAsia, Prefs.regionEasternAsia, Prefs.regionSouthEasternAsia, Prefs.regionSouthernAsia, Prefs.regionWesternAsia};
 
     //Europe
-    String[] regionEurope = new String[] { "151", "154", "039", "155"};
+    String[] regionEurope = new String[] { Prefs.regionEasternEurope, Prefs.regionNorthernEurope, Prefs.regionSouthernEurope, Prefs.regionWesternEurope};
 
     //Oceania
-    String[] regionOceania = new String[] { "053", "054", "057", "061" };
+    String[] regionOceania = new String[] { Prefs.regionAustraliaNewZealand, Prefs.regionMelanesia, Prefs.regionMicronesia, Prefs.regionPolynesia };
 
 
     AdapterHelper(Context context){
@@ -118,12 +118,20 @@ public class AdapterHelper {
         for (String child: regionOceania){
             m = new HashMap<String, String>();
             locale = new Locale("", child);
-            m.put(ATTR_SUBREGION, locale.getDisplayName());
+            Log.d(Prefs.TAG, "Adapter country = " + locale.getDisplayCountry());
+            m.put(ATTR_SUBREGION, locale.getDisplayCountry());  //locale.getDisplayName()
             m.put(ATTR_CODE, child);
             oceaniaData.add(m);
-            //locale = new Locale("", "DEU");
-            //Log.d(TAG, "Adapter country = " + locale.getDisplayCountry());
+
         }
+
+        //locale = new Locale("", "061");
+        //Log.d(Prefs.TAG, "Adapter country = " + locale.getDisplayCountry());
+
+
+        //m.clear(); do not clear !!!
+        m = null;
+        locale = null;
         allChildData.add(oceaniaData);
 
 
@@ -138,7 +146,7 @@ public class AdapterHelper {
         adapter = new ExpandableListAdapter(
                 ctx,
                 regionsData,
-                R.layout.expandable_list_item,
+                R.layout.region_list_item,
                 groupFrom,
                 groupTo,
                 allChildData,
@@ -147,13 +155,12 @@ public class AdapterHelper {
                 childTo
         );
 
-
-
         return adapter;
-    }
+
+    } //getAdapter()
 
     String getChildCode(int groupPos, int childPos){
-        String res = ((Map<String, String>)(adapter.getChild(groupPos, childPos))).get(ATTR_CODE);
+        String res = ((HashMap<String, String>)(adapter.getChild(groupPos, childPos))).get(ATTR_CODE);
         Log.d(Prefs.TAG, getClass().getSimpleName() + ".getChildCode = " + res);
 
         return res;

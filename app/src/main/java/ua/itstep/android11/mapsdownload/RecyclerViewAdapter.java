@@ -1,31 +1,16 @@
 package ua.itstep.android11.mapsdownload;
 
+import android.app.DownloadManager;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.os.AsyncTask;
-import android.os.Environment;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.PowerManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,21 +19,35 @@ import java.util.Map;
 /**
  * Created by Maksim Baydala on 04/05/17.
  */
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
+        ItemDownloadCallback, ItemPercentCallback {
+
+    private final OnFragmentInteractionListener mListener;
+    private int currentDownloadsCount = 0;
+    private final DownloadManager downloadManager;
+    private final RecyclerView recyclerView;
+    private final ItemDownloadPercentObserver mItemDownloadPercentObserver;
+    private final DownloadRequestsSubscriber mDownloadRequestsSubscriber;
+    //private final WeakReference<Context> contextWeakReference;
     final String ATTR_COUNTRY = "country";
     final String ATTR_CODE = "M49code";
 
-    DownloadTask downloadTask;
+    RegionModel downloadTask;
     CountriesActivity activity;
 
     Context context;
-    ArrayList<Map<String, String>> regionData;
+    //ArrayList<Map<String, String>> regionData;
+    ArrayList<ItemDetailsViewHolder> holders;
+    ArrayList<RegionModel> itemModelsList;
     boolean[] itemDownloadFlags;
-    Map<String, String> item;
+    //Map<String, String> item;
+    //private RegionModel itemData;
     Map<String, String> mapUrl;
     Locale locale;
     String[] regionCodes;
-    //ViewHolder vHolder;
+    //private final ArrayList<RegionModel> itemsList;
+    //private ArrayList<? extends Parcelable> parcelableList;
+    private PowerManager.WakeLock wakeLock;
 
 
     /*
@@ -88,7 +87,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     String[] regionWesternEurope = new String[] { "AUT", "BEL", "FRA", "DEU", "LIE", "LUX", "MCO", "NLD", "CHE" };
 
     //oceania
-    String[] regionAustraliaNewZeland = new String[] { "AUS", "CXR", "CCK", "HMD", "NZL", "NFK" };
+    String[] regionAustraliaNewZealand = new String[] { "AUS", "CXR", "CCK", "HMD", "NZL", "NFK" };
     String[] regionMelanesia = new String[] { "FJI", "NCL", "PNG", "SLB", "VUT" };
     String[] regionMicronesia = new String[] { "GUM", "KIR", "MHL", "FSM", "NRU", "MNP", "PLW", "UMI" };
     String[] regionPolynesia = new String[] { "ASM", "COK", "PYF", "NIU", "PCN", "WSM", "WSM", "TON", "TUV", "WLF" };
@@ -97,380 +96,305 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     String DEU_URL = "http://download.osmand.net/download.php?standard=yes&file=Denmark_europe_2.obf.zip";
 
 
-    public RecyclerViewAdapter(CountriesActivity activity, String code) {
+
+    public RecyclerViewAdapter(Context ctx, RegionModel region, OnFragmentInteractionListener listener, RecyclerView recyclerView) {
         Log.d(Prefs.TAG, getClass().getSimpleName() +".CONSTRUCT ");
+        String code = "ERROR";
+        this.mListener = listener;
+        this.context = ctx;
+        this.recyclerView = recyclerView;
+        //this.activity = activity;
 
-        this.context = activity.getApplicationContext();
-        this.activity = activity;
+        this.downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        //this.contextWeakReference = new WeakReference(context);
 
-        regionData = new ArrayList<Map<String, String>>();
+        //Observable for percent of individual downloads.
+        mItemDownloadPercentObserver = new ItemDownloadPercentObserver(this);
+        //Observable for download request
+        mDownloadRequestsSubscriber = new DownloadRequestsSubscriber(this);
 
-        switch (code) {
-            case "015":
-                regionCodes = regionNorthernAfrica;
-                break;
-            case "014":
-                regionCodes = regionEasternAfrica;
-                break;
-            case "017":
-                regionCodes = regionMiddleAfrica;
-                break;
-            case "018":
-                regionCodes = regionSouthernAfrica;
-                break;
-            case "011":
-                regionCodes = regionWesternAfrica;
-                break;
-            case "029":
-                regionCodes = regionCaribbean;
-                break;
-            case "013":
-                regionCodes = regionCentralAmerica;
-                break;
-            case "005":
-                regionCodes = regionSouthAmerica;
-                break;
-            case "021":
-                regionCodes = regionNorthernAmerica;
-                break;
-            case "143":
-                regionCodes = regionCentralAsia;
-                break;
-            case "030":
-                regionCodes = regionEasternAsia;
-                break;
-            case "035":
-                regionCodes = regionSouthEasternAsia;
-                break;
-            case "034":
-                regionCodes = regionSouthernAsia;
-                break;
-            case "145":
-                regionCodes = regionWesternAsia;
-                break;
-            case "151":
-                regionCodes = regionEasternEurope;
-                break;
-            case "154":
-                regionCodes = regionNorthernEurope;
-                break;
-            case "039":
-                regionCodes = regionSouthernEurope;
-                break;
-            case "155":
-                regionCodes = regionWesternEurope;
-                break;
-            case "053":
-                regionCodes = regionAustraliaNewZeland;
-                break;
-            case "054":
-                regionCodes = regionMelanesia;
-                break;
-            case "057":
-                regionCodes = regionMicronesia;
-                break;
-            case "061":
-                regionCodes = regionPolynesia;
-                break;
+        itemModelsList = region.getChildren();
+        holders = new ArrayList<ItemDetailsViewHolder>();
 
-        }
-
-        itemDownloadFlags = new boolean[regionCodes.length];
-
-        for (int i = 0; i < regionCodes.length; i++){
-            itemDownloadFlags[i] = false ;
-            item = new HashMap<String, String>();
-            locale = new Locale("", regionCodes[i]);
-            Log.d(Prefs.TAG, "country = " + locale.getDisplayName());
-            item.put(ATTR_COUNTRY, locale.getDisplayName());
-            item.put(ATTR_CODE, regionCodes[i]);
-            regionData.add(item);
-        }
 
         mapUrl = new HashMap<String, String>();
         mapUrl.put("DEU",DEU_URL);
 
+        registerReceiver();
+
+
 
     }
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(Prefs.TAG, getClass().getSimpleName() +" onCreateViewHolder() ");
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //Log.d(Prefs.TAG, getClass().getSimpleName() +" onCreateViewHolder() ");
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.country_item, parent, false);
+        ItemDetailsViewHolder viewHolder = new ItemDetailsViewHolder(view, /*contextWeakReference.get()*/ context, this, mListener);
+        holders.add(viewHolder);
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onCreateViewHolder() size: "+holders.size());
 
-        return new ViewHolder(view);
+        return viewHolder;
+
     }
 
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        //Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() "+ position);
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() "+ position);
 
-        //downloadTask = new DownloadTask(context, holder);
-
-        holder.m49code = regionData.get(position).get(ATTR_CODE);
-        holder.imageView.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
-        holder.tvCountry.setText(regionData.get(position).get(ATTR_COUNTRY));
-        Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() " + position + "  "+ isItemDownloading(position));
-        if (isItemDownloading(position)) {
-            holder.imageDownload.setImageResource(R.drawable.ic_action_remove_dark);
-            holder.progressBar.setVisibility(View.VISIBLE);
-        } else {
-            holder.progressBar.setVisibility(View.GONE);
+        if(holders.contains(holder)){
+            Log.d(Prefs.TAG, getClass().getSimpleName() +".onBindViewHolder() holder is in list");
         }
 
-        holder.imageDownload.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
+        RegionModel item = itemModelsList.get(position);
+        item.setId(position);
+
+        if (!(holder instanceof ItemDetailsViewHolder)) {
+            return;
+        }
+        /*DownloadableItem downloadableItem = DownloadItemHelper.getItem(contextWeakReference
+                .get(), itemsList.get(position));*/
+        ((ItemDetailsViewHolder) holder).updateDetails(item);
 
     }
 
     @Override
     public int getItemCount() {
-        return ( null != regionData ? regionData.size() : 0 );
+        return  ( itemModelsList != null ? itemModelsList.size() : 0 );
+            //return ( null != regionData ? regionData.size() : 0 );
+
     }
 
-    private DownloadTask getDownloadTask(ViewHolder holder){
-        return (downloadTask != null) ? downloadTask : new DownloadTask(context, holder);
+
+
+    /**
+     * This callback is called when the user clicks on any item for download.
+     *
+     * @param downloadableItem - Item to be downloaded.
+     */
+    public void onDownloadEnqueued(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadEnqueued" );
+        mDownloadRequestsSubscriber.emitNextItem(downloadableItem);
     }
 
-    private void startAction(ViewHolder holder, int pos) {
-        if ( isItemDownloading(pos) )  {
+
+    /**
+     * This callback is called when the item starts getting downloaded.
+     *
+     * @param downloadableItem - Item to be downloaded.
+     */
+    @Override
+    public void onDownloadStarted(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadStarted" );
+        //Increment the current number of downloads by 1
+        currentDownloadsCount++;
+        String downloadUrl = downloadableItem.getItemDownloadUrl();
+        long downloadId =
+                RxDownloadManagerHelper.enqueueDownload(downloadManager, downloadUrl);
+        if (downloadId == Prefs.INVLALID_ID) {
+            return;
+        }
+        downloadableItem.setDownloadId(downloadId);
+        downloadableItem.setDownloadingStatus(DownloadingStatus.IN_PROGRESS);
+        updateDownloadableItem(downloadableItem);
+        RxDownloadManagerHelper.queryDownloadPercents(downloadManager, downloadableItem,
+                mItemDownloadPercentObserver.getPercentageObservableEmitter());
+
+    }
+
+    @Override
+    public void onDownloadCompleted() {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadComplete" );
+        //Decrement the current number of downloads by 1
+        currentDownloadsCount--;
+        mDownloadRequestsSubscriber.requestFile(Prefs.MAX_COUNT_OF_SIMULTANEOUS_DOWNLOADS -
+                currentDownloadsCount);
+    }
+
+    @Override
+    public void onDownloadCanceled(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadCanceled" );
+        //Decrement the current number of downloads by 1
+        currentDownloadsCount--;
+        downloadableItem.setDownloadingStatus(DownloadingStatus.NOT_DOWNLOADED);
+        RxDownloadManagerHelper.cancelDownload(downloadManager, downloadableItem,
+                mItemDownloadPercentObserver.getPercentageObservableEmitter());
+        mListener.onItemDownloaded(downloadableItem);
+
+        //mDownloadRequestsSubscriber.requestFile(Prefs.MAX_COUNT_OF_SIMULTANEOUS_DOWNLOADS -
+         //       currentDownloadsCount);
+    }
+
+
+    public void performCleanUp() {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" performCleanUp");
+        mItemDownloadPercentObserver.performCleanUp();
+        mDownloadRequestsSubscriber.performCleanUp();
+    }
+
+    @Override
+    public void updateDownloadableItem(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" updateDownloadableItem size= " + itemModelsList.size());
+
+
+        ItemDetailsViewHolder itemDetailsViewHolder = (ItemDetailsViewHolder)
+                recyclerView.findViewHolderForLayoutPosition(downloadableItem.getId());
+        //It means that the viewholder is not currently displayed.
+        if (itemDetailsViewHolder == null) {
+            if (downloadableItem.getItemDownloadPercent() == Prefs.DOWNLOAD_COMPLETE_PERCENT) {
+                downloadableItem.setDownloadingStatus(DownloadingStatus.DOWNLOADED);
+                onDownloadCompleted();
+            }
+            return;
+        }
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" updateDownloadableItem size= ");
+        if (downloadableItem.getDownloadingStatus().equals(DownloadingStatus.NOT_DOWNLOADED)) {
+            onDownloadCompleted();
+        }
+        //itemDetailsViewHolder.updateDetails(downloadableItem);
+        notifyItemChanged(downloadableItem.getId()); //onBindViewHolder
+        mListener.onItemDownloaded(downloadableItem);
+
+    }
+
+
+
+    public void init(int position ){
+        //Log.d(Prefs.TAG, getClass().getSimpleName() +".init: "+position);
+        //CountriesActivity activity = getActivity();
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+        wakeLock.acquire();
+
+        activity.progressBar.setIndeterminate(false);
+        activity.progressBar.setProgress(0);
+        activity.progressBar.setVisibility(View.VISIBLE);
+        activity.tvCountry.setText(itemModelsList.get(position).getRegionName());
+        activity.frameLayout.setVisibility(View.VISIBLE);
+
+    }
+
+    public void refresh(int position ){
+        //Log.d(Prefs.TAG, getClass().getSimpleName() +".refreshe: "+position);
+        if (getItem(position).isInProgress()) {
+            //CountriesActivity activity = getActivity();
+            activity.tvProgress.setText(getItem(position).getProgress() + " %");
+            activity.progressBar.setProgress(getItem(position).getProgress());
+            activity.frameLayout.setVisibility(View.VISIBLE);
+        } else {
+            activity.frameLayout.setVisibility(View.GONE);
+            activity.progressBar.setProgress(0);
+            activity.progressBar.setIndeterminate(false);
+        }
+        notifyItemChanged(position);
+        //notifyDataSetChanged();
+
+    }
+
+
+
+    private void startAction(RecyclerView.ViewHolder holder, int pos) {
+        RegionModel item = itemModelsList.get(pos);
+        if ( item.isInProgress() )  {
             cancelDownload(holder, pos);
         } else {
             startDownload(holder, pos);
 
         }
     }
-    private void startDownload(ViewHolder holder, int pos){
-        String m49code = regionData.get(pos).get(ATTR_CODE);
-        setItemDownloading(pos, true);
-        getDownloadTask(holder).execute(mapUrl.get(m49code));
+
+    private void startDownload(RecyclerView.ViewHolder holder, int pos){
+        RegionModel item = itemModelsList.get(pos);
+        item.setInProgress(true);
+
+        Intent intent = new Intent(this.context, null);
+        intent.putExtra("filename", item.getRegionName()); //TODO convert to filename
+        intent.putExtra("m49code", item.getM49code());
+        intent.putExtra("position", pos);
+        activity.startService(intent);
+
+
+        refresh(pos);
+
     }
 
-    private void cancelDownload(ViewHolder holder, int pos){
+    private void cancelDownload(RecyclerView.ViewHolder holder, int pos){
         Log.d(Prefs.TAG, " cancelDownload: "+ pos);
-        setItemDownloading(pos, false);
-        getDownloadTask(holder).cancel(true);
+        RegionModel item = itemModelsList.get(pos);
+        item.setInProgress(false);
+        item.setIsLoaded(false);
+        item.setProgress(0);
+
+        refresh(pos);
 
     }
 
-    private boolean isItemDownloading(int pos) {
-        return itemDownloadFlags[pos];
+    public void setItems(ArrayList<RegionModel> itemsList) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +".setItems size: " +itemsList.size());
+        itemModelsList = new ArrayList<RegionModel>();
+        itemModelsList.addAll(itemsList);
     }
 
-    private void setItemDownloading(int pos, boolean isLoading){
-        itemDownloadFlags[pos] = isLoading;
+    public RegionModel getItem(int pos) {
+        return itemModelsList.get(pos);
+    }
+
+    public ArrayList<RegionModel> getParcelableList() {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +".getParcelableList ");
+        return itemModelsList;
+    }
+
+    public CountriesActivity getActivity(){
+        return  activity;
+    }
+
+
+    private void registerReceiver(){
+        //LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Prefs.MESSAGE_PROGRESS);
+        //bManager.registerReceiver(broadcastReceiver, intentFilter);
+
     }
 
 
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvCountry;
-        private ImageView imageView;
-        private ImageView imageDownload;
-        private ProgressBar progressBar;
-        private String m49code;
 
-
-        ViewHolder(final View view) {
-            super(view);
-            //mView = view;
-            imageView = (ImageView) view.findViewById(R.id.imageIcon);
-            tvCountry = (TextView) view.findViewById(R.id.tvCountry);
-            imageDownload = (ImageView) view.findViewById(R.id.imageDownload);
-            progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-            //downloadTask = new DownloadTask(view.getContext(), this);
-
-
-            imageDownload.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(Prefs.TAG, getClass().getSimpleName() +" ViewHolder.onClick " + getAdapterPosition());
-
-                    startAction(ViewHolder.this, getAdapterPosition());
-                    //downloadTask = new DownloadTask(view.getContext(), ViewHolder.this);
-
-                }
-            });
-
-            Log.d(Prefs.TAG, getClass().getSimpleName() +"  ViewHolder.constructor () ");
-
-        }
-
+/*
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
-        public String toString() {
-            return super.toString() + " '" + tvCountry.getText() + "'";
-        }
-    }
+        public void onReceive(Context context, Intent intent) {
+            //TODO check m49code
+            if(intent.getAction().equals(Prefs.MESSAGE_PROGRESS)){
 
+                RegionModel download = intent.getParcelableExtra("download");
 
+                int pos = regionCodes[];
+                RegionModel item = itemModelsList.get(pos);
+                progressBar.setProgress(download.getProgress());
+                if(download.getProgress() == 100){
+                    //mProgressText.setText("File Download Complete");
+                    frameLayout.setVisibility(View.GONE);
+                    progressBar.setProgress(0);
+                    progressBar.setIndeterminate(false);
 
-    private class DownloadTask extends AsyncTask<String, Integer, String > {
-        private final int SIZE = 4096 ;
-        private final String CONNECTION = "Connection";
-        private final String KEEP_ALIVE = "Keep-Alive";
-
-        private Context context;
-        private PowerManager.WakeLock wakeLock;
-        private ViewHolder vHolder;
-
-        DownloadTask(Context ctx, ViewHolder holder){
-            this.context = ctx;
-            this.vHolder = holder;
-
-        }
-
-        DownloadTask(){}
-
-        @Override
-        protected String doInBackground(String... url) {
-            Log.d(Prefs.TAG, "doInBackground url: " + url[0]);
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-            HttpURLConnection conn = null;
-
-            try {
-                conn = (HttpURLConnection) new URL(url[0]).openConnection();
-                conn.setDoInput(true);
-                conn.setRequestProperty(CONNECTION, KEEP_ALIVE);
-                conn.connect();
-
-                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK){
-                    StringBuilder str = new StringBuilder();
-                    str.append("Server response: ");
-                    str.append(conn.getResponseCode());
-                    str.append(" ");
-                    str.append(conn.getResponseMessage());
-                    Log.d(Prefs.TAG, getClass().getSimpleName() +" doInBackground: " + str.toString());
-                    return str.toString();
+                } else {
+                    //mProgressText.setText(String.format("Downloaded (%d/%d) MB",download.getCurrentFileSize(),download.getTotalFileSize()));
+                    tvProgress.setText( String.format(Locale.ENGLISH, "%d %",download.getProgress()) );
+                    progressBar.setProgress(download.getProgress());
+                    frameLayout.setVisibility(View.VISIBLE);
                 }
-
-                int fileLength = conn.getContentLength(); //might be -1  = no response
-                Log.d(Prefs.TAG, getClass().getSimpleName() +" doInBackground fileLength: " + fileLength);
-                File dest = new File( context.getFilesDir(), new File(url[0]).getName() );
-                inputStream = new BufferedInputStream(conn.getInputStream());
-                outputStream = new FileOutputStream(dest);
-
-                byte[] data = new byte[SIZE];
-                long total = 0;
-                int count;
-                while ( (count = inputStream.read(data)) != -1 ) {
-                    if (isCancelled()) {
-                        inputStream.close();
-                        outputStream.flush();
-                        outputStream.close();
-                        conn.disconnect();
-                        inputStream = null;
-                        conn = null;
-                        return null;
-                    }
-
-                    total += count;
-                    if (fileLength > 0) publishProgress( (int)(total * 100 / fileLength) ); //onProgressUpdate called
-
-                    outputStream.write(data, 0, count);
-                }
-
-                outputStream.flush();
-                outputStream.close();
-                inputStream.close();
-                conn.disconnect();
-                inputStream = null;
-                outputStream = null;
-                conn = null;
-
-
-            } catch (MalformedURLException ex) {
-                Log.e(Prefs.TAG, "Parsing URL failed: "+ url);
-                // for testing only
-                long total = 100000;
-                int count= 0;
-                while (count < total){
-                    publishProgress( (int)(count * 100 / total) );
-                    count++;
-                    Log.d(Prefs.TAG, "count: " +count);
-                }
-
-            } catch (IOException ex) {
-                Log.d(Prefs.TAG, "URL does not exist: "+ url);
-            } catch (OutOfMemoryError ex) {
-                Log.w(Prefs.TAG, "Warning: Out of Memory! URL: "+ url);
-            } finally {
-                try {
-                    if (outputStream != null) outputStream.close();
-                    if (inputStream != null) inputStream.close();
-                } catch (IOException ex) {}
-
-                if (conn != null) conn.disconnect();
-
-
-
-
-
             }
-
-
-
-            return null;
         }
+    };
+    */
 
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.d(Prefs.TAG, " onPreExecute");
-            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-            wakeLock.acquire();
 
-            activity.progressBar.setIndeterminate(false);
-            activity.progressBar.setProgress(0);
-            activity.progressBar.setVisibility(View.VISIBLE);
-            activity.tvCountry.setText(regionData.get(vHolder.getAdapterPosition()).get(ATTR_COUNTRY));
-            activity.frameLayout.setVisibility(View.VISIBLE);
-
-            vHolder.imageView.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
-            vHolder.progressBar.setProgress(0);
-            vHolder.progressBar.setIndeterminate(false);
-            vHolder.progressBar.setVisibility(View.VISIBLE);
-            vHolder.imageDownload.setImageResource(R.drawable.ic_action_remove_dark);
-            vHolder.imageDownload.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
-            //setItemDownloading(vHolder.getAdapterPosition(), true);
-            Log.d(Prefs.TAG, " onPreExecute: " + vHolder.getAdapterPosition()+" "+ isItemDownloading(vHolder.getAdapterPosition()));
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            Log.d(Prefs.TAG, " onProgressUpdate "+ values[0]);
-            activity.tvCountry.setText(regionData.get(vHolder.getAdapterPosition()).get(ATTR_COUNTRY));
-            String progress = values[0].toString() + " %";
-            activity.tvProgress.setText(progress);
-            activity.progressBar.setProgress(values[0]);
-            activity.frameLayout.setVisibility(View.VISIBLE);
-            vHolder.progressBar.setProgress(values[0]);
-
-
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.d(Prefs.TAG, " onPostExecute: "+ s);
-            vHolder.progressBar.setVisibility(View.GONE);
-            vHolder.imageDownload.setImageResource(R.drawable.ic_action_import);
-            vHolder.imageDownload.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.colorItemIcon), PorterDuff.Mode.SRC_IN);
-            vHolder.imageView.getDrawable().mutate().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-
-            activity.frameLayout.setVisibility(View.GONE);
-            //setItemDownloading(vHolder.getAdapterPosition(), false);
-        }
-
-
-    } //DownloadTask
 
 
 } //RecyclerViewAdapter

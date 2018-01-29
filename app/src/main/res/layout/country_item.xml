@@ -7,36 +7,38 @@
     android:orientation="horizontal"
     android:paddingLeft="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_vertical_margin"
-    android:background="@color/colorItemBackground">
+    >
 
     <ImageView
+        android:id="@+id/imageIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageIcon"
         android:layout_centerVertical="true"
         android:minHeight="24dp"
         android:minWidth="24dp"
-        android:backgroundTintMode="src_over"
-        android:src="@drawable/ic_map" />
+        app:srcCompat="@drawable/ic_map" />
 
 
     <LinearLayout
         android:id="@+id/ll"
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toRightOf="@+id/imageIcon"
         android:layout_toEndOf="@+id/imageIcon"
+        android:layout_toLeftOf="@+id/imageDownload"
+        android:layout_toStartOf="@+id/imageDownload"
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/tvCountry"
+            android:id="@+id/regionName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_vertical_margin"
             tools:text="country"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="#212121"/>
 
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
@@ -44,6 +46,8 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_vertical_margin"
+            android:paddingEnd="@dimen/activity_vertical_margin"
             android:id="@+id/progressBar" />
     </LinearLayout>
 
@@ -55,8 +59,8 @@
         android:minHeight="24dp"
         android:minWidth="24dp"
         app:srcCompat="@drawable/ic_action_import"
-        android:backgroundTintMode="src_in"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"/>
 
 
 </RelativeLayout>

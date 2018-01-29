@@ -1,35 +1,31 @@
 package ua.itstep.android11.mapsdownload;
 
-import android.content.Intent;
-import android.os.Environment;
-import android.os.StatFs;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.xmlpull.v1.XmlPullParserException;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     private final String ATTR_CODE = "M49code";
 
-     ExpandableListView elvMain;
-     ExpandableListAdapter adapter;
-     AdapterHelper adptrHelper;
-     TextView tvDevMemory;
-     TextView tvFree;
-     TextView tvSize;
+    ExpandableListView elvMain;
+    ExpandableListAdapter adapter;
+    AdapterHelper adptrHelper;
+    TextView tvDevMemory;
+    TextView tvFree;
+    TextView tvSize;
+    XMLParseHelper xmlParseHelper;
+    RegionModel root;
+    private FreespaceFragment freespace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,61 +35,114 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        root = new RegionModel();
+        root.setRegionName(getResources().getString(R.string.app_name));
+
+        xmlParseHelper = new XMLParseHelper(this);
+        try {
+            xmlParseHelper.setData(root);
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        freespace = new FreespaceFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.freespace_container, freespace, "space")
+                .commit();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.list_container, RecyclerViewFragment.newInstance(root), "world")
+                .commit();
+
         adptrHelper = new AdapterHelper(this);
         adapter = adptrHelper.getAdapter();
 
-        elvMain = (ExpandableListView) findViewById(R.id.elvMain);
-        elvMain.setAdapter(adapter);
-
-        tvDevMemory = (TextView) findViewById(R.id.tvDevMemory);
-        tvDevMemory.setText(R.string.dev_memory);
-
-        tvFree = (TextView) findViewById(R.id.tvFree);
-        tvFree.setText(R.string.free);
-
-        tvSize = (TextView) findViewById(R.id.tvSize);
-        tvSize.setText( getAvailableInternalMemorySize() );
-
-        elvMain.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                Log.d(Prefs.TAG, "onChildClick  groupPosition = "+groupPosition +"  childPosition = "+ childPosition + " code = " + adptrHelper.getChildCode(groupPosition, childPosition));
-                Intent intent = new Intent(getApplicationContext(), CountriesActivity.class);
-                intent.putExtra( ATTR_CODE, adptrHelper.getChildCode(groupPosition, childPosition) );
-                startActivity(intent);
-
-                return false;
-            }
-        });
-
     } //onCreate
 
-    public static String getAvailableInternalMemorySize() {
-        File path = Environment.getDataDirectory();
-        StatFs stat = new StatFs(path.getPath());
-        long blockSize = stat.getBlockSize();
-        long availableBlocks = stat.getAvailableBlocks();
-        return formatSize(availableBlocks * blockSize);
+    @Override
+    public void onBackPressed() {
+        if (root.getDepth() == 1){
+            super.onBackPressed();
+        } else {
+            onItemSelected(root.getParent());
+
+        }
     }
 
-    public static String floatForm (double d) {
-        return new DecimalFormat("#.##").format(d);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            Log.d(Prefs.TAG, getClass().getSimpleName() + ".onOptionsItemSelected");
+            onBackPressed();
+        }
+        return true;
     }
 
-    public static String formatSize(long size) {
+    @Override
+    public void onItemSelected( RegionModel region) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() + ".onItemSelected");
 
-        long Kb = 1  * 1024;
-        long Mb = Kb * 1024;
-        long Gb = Mb * 1024;
-        long Tb = Gb * 1024;
+        root = region;
+        RecyclerViewFragment fragment = RecyclerViewFragment.newInstance(root);
 
-        if (size <  Kb)                 return floatForm(        size     ) + " byte";
-        if (size >= Kb && size < Mb)    return floatForm((double)size / Kb) + " Kb";
-        if (size >= Mb && size < Gb)    return floatForm((double)size / Mb) + " Mb";
-        if (size >= Gb && size < Tb)    return floatForm((double)size / Gb) + " Gb";
+        try {
+            if(root.getDepth() > 1) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .hide(freespace)
+                        .commit();
+            } else {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.freespace_container, freespace)
+                        .show(freespace)
+                        .commit();
+            }
+            getSupportActionBar().setTitle(root.getRegionName());
 
-        return "???";
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.list_container, fragment)
+                .commit();
+
+
     }
+
+    @Override
+    public void onItemDownloaded(RegionModel region) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() + ".onItemDownloaded");
+
+        DownloadingStatus status = region.getDownloadingStatus();
+        DownloadProgressFragment progress = DownloadProgressFragment.newInstance(region);
+
+        if (status.equals(DownloadingStatus.WAITING) || status.equals(DownloadingStatus.IN_PROGRESS)) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.freespace_container, progress)
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.freespace_container, progress)
+                    .hide(progress)
+                    .commit();
+        }
+
+    }
+
+
 
 
 } //MainActivity

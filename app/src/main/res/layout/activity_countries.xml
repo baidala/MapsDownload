@@ -48,7 +48,7 @@
                 android:layout_toRightOf="@id/tvDownload"
                 android:layout_marginRight="4dp"
                 tools:text="Germany"
-                android:id="@+id/tvCountry" />
+                android:id="@+id/regionName" />
 
             <ProgressBar
                 style="?android:attr/progressBarStyleHorizontal"
