@@ -82,8 +82,7 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
         tvProgress = (TextView) view.findViewById(R.id.tvProgress);
         progressBar = (ProgressBar) view.findViewById(R.id.pBar);
 
-        //String progress = new DecimalFormat("# %").format(region.getItemDownloadPercent());
-        String progress = DecimalFormat.getPercentInstance().format(region.getItemDownloadPercent());
+        String progress = String.format("%d%%", region.getItemDownloadPercent());
         tvDownload.setText(R.string.download);
         tvCountry.setText(region.getRegionName());
         tvProgress.setText(progress);
