@@ -1,6 +1,8 @@
 package ua.itstep.android11.mapsdownload;
 
 import android.app.Dialog;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,6 +29,7 @@ public class DownloadDialog extends DialogFragment implements ItemDownloadCallba
     private TextView tvRegion;
     private TextView tvProgress;
     private ProgressBar progressBar;
+    private DownloadManager downloadManager;
     private ItemDownloadPercentObserver mItemDownloadPercentObserver;
     private DownloadRequestsSubscriber mDownloadRequestsSubscriber;
 
@@ -82,6 +85,7 @@ public class DownloadDialog extends DialogFragment implements ItemDownloadCallba
         mItemDownloadPercentObserver = new ItemDownloadPercentObserver(this);
         //Observable for download request
         mDownloadRequestsSubscriber = new DownloadRequestsSubscriber(this);
+        downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
         onDownloadEnqueued(region);
 
         return builder.create();
@@ -97,6 +101,8 @@ public class DownloadDialog extends DialogFragment implements ItemDownloadCallba
     public void onDownloadStarted(RegionModel downloadableItem) {
         Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadStarted" );
         updateDownloadableItem(downloadableItem);
+        RxDownloadManagerHelper.queryDownloadPercents(downloadManager, downloadableItem,
+                mItemDownloadPercentObserver.getPercentageObservableEmitter());
 
     }
 
@@ -108,12 +114,22 @@ public class DownloadDialog extends DialogFragment implements ItemDownloadCallba
     @Override
     public void onDownloadCanceled(RegionModel downloadableItem) {
         Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadCanceled" );
+
     }
 
     @Override
     public void updateDownloadableItem(RegionModel downloadableItem) {
         Log.d(Prefs.TAG, getClass().getSimpleName() +" updateDownloadableItem" );
+
         progressBar.setProgress(downloadableItem.getItemDownloadPercent());
+
+        StringBuilder progress = new StringBuilder(formatSize(downloadableItem.getCurrentFileSize()));
+        progress.append(" from ");
+        progress.append(formatSize(downloadableItem.getTotalFileSize()));
+
+        tvProgress.setText(progress.toString());
+        tvRegion.setText(downloadableItem.getRegionName());
+
     }
 
     @Override

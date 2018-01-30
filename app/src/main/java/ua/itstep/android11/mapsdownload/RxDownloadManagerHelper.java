@@ -62,7 +62,7 @@ public class RxDownloadManagerHelper {
                                              final RegionModel downloadableItem,
                                              final ObservableEmitter percentFlowableEmiitter) {
 
-        Log.d(Prefs.TAG, CLASS +  "  queryDownloadPercents");
+        //Log.d(Prefs.TAG, CLASS +  "  queryDownloadPercents");
         //If the emitter has been disposed, then return.
         if (downloadManager == null || downloadableItem == null || percentFlowableEmiitter == null
                 || percentFlowableEmiitter.isDisposed()) {
@@ -92,26 +92,27 @@ public class RxDownloadManagerHelper {
             percentFlowableEmiitter.onNext(downloadableItem);
             downloadableItem.setLastEmittedDownloadPercent(currentDownloadPercent);
         }
+        /*
         Log.d(Prefs.TAG, CLASS +
                 " Querying the DB: DownloadStatus =  " + downloadStatus + " downloadPercent = " +
                         "" + currentDownloadPercent);
         Log.d(Prefs.TAG, CLASS + " Querying the DB: alertReason =  " + alertReason);
-
+        */
         Handler handler;
         switch (downloadStatus) {
             case DownloadManager.STATUS_FAILED:
-                Log.d(Prefs.TAG, CLASS +" STATUS_FAILED" );
+                //Log.d(Prefs.TAG, CLASS +" STATUS_FAILED" );
                 downloadManager.remove(downloadableItem.getDownloadId());
                 downloadableItem.setDownloadingStatus(DownloadingStatus.NOT_DOWNLOADED);
                 percentFlowableEmiitter.onNext(downloadableItem); //ItemDownloadPercentObserver
                 break;
 
             case DownloadManager.STATUS_SUCCESSFUL:
-                Log.d(Prefs.TAG, CLASS +" STATUS_SUCCESSFUL" );
+                //Log.d(Prefs.TAG, CLASS +" STATUS_SUCCESSFUL" );
                 break;
 
             case DownloadManager.STATUS_PENDING:
-                Log.d(Prefs.TAG, CLASS +" STATUS_PENDING" );
+                //Log.d(Prefs.TAG, CLASS +" STATUS_PENDING" );
                 handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -122,7 +123,7 @@ public class RxDownloadManagerHelper {
                 break;
 
             case DownloadManager.STATUS_RUNNING:
-                Log.d(Prefs.TAG, CLASS +" STATUS_RUNNING" );
+                //Log.d(Prefs.TAG, CLASS +" STATUS_RUNNING" );
                 handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -133,7 +134,7 @@ public class RxDownloadManagerHelper {
                 break;
 
             case DownloadManager.STATUS_PAUSED:
-                Log.d(Prefs.TAG, CLASS +" STATUS_PAUSED" );
+                //Log.d(Prefs.TAG, CLASS +" STATUS_PAUSED" );
                 handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -147,7 +148,7 @@ public class RxDownloadManagerHelper {
                 break;
 
             case DownloadManager.ERROR_FILE_ERROR:
-                Log.d(Prefs.TAG, CLASS +" ERROR_FILE_ERROR" );
+                //Log.d(Prefs.TAG, CLASS +" ERROR_FILE_ERROR" );
                 downloadableItem.setDownloadingStatus(DownloadingStatus.NOT_DOWNLOADED);
                 downloadManager.remove(downloadableItem.getDownloadId());
                 percentFlowableEmiitter.onNext(downloadableItem);
@@ -162,7 +163,7 @@ public class RxDownloadManagerHelper {
      */
     private static DownloadableResult getDownloadResult(DownloadManager downloadManager,
                                                         long downloadId) {
-        Log.d(Prefs.TAG, CLASS +  "  getDownloadResult");
+        //Log.d(Prefs.TAG, CLASS +  "  getDownloadResult");
         //Create a query with downloadId as the filter.
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadId);
@@ -211,7 +212,7 @@ public class RxDownloadManagerHelper {
     }
 
     public static void cancelDownload(DownloadManager downloadManager, RegionModel item, final ObservableEmitter percentFlowableEmiitter) {
-        Log.d(Prefs.TAG, CLASS +  "  cancelDownload");
+        //Log.d(Prefs.TAG, CLASS +  "  cancelDownload");
 
         if (downloadManager == null ) {
             return;
