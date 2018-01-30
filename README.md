@@ -50,4 +50,11 @@ france_corse_europe_2.obf.zip = France_corse_europe_2.obf.zip
 - Иконка: ic_world_globe_dark.png или ic_map.png, цвет #727272
 - Текст в ячейке: 16sp, цвет #212121.
 
+![alt text](./device-2018-01-30-211902.png  "1")
+ 
+![alt text](./device-2018-01-30-211935.png  "2")
+
+![alt text](./device-2018-01-30-212012.png  "3")
+
+![alt text](./device-2018-01-30-212117.png  "4")
 
