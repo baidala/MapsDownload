@@ -1,13 +1,10 @@
 package ua.itstep.android11.mapsdownload;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.kxml2.io.KXmlParser;
-
 import java.io.IOException;
 
 /**
@@ -49,9 +46,6 @@ public class XMLParseHelper {
     private synchronized void parseXML() throws IOException, XmlPullParserException {
 
         XmlPullParser parser = prepareXpp();
-
-        String map = " map = yes";
-        String file;
         int depth = 1;
 
         //<region_list>
@@ -59,7 +53,7 @@ public class XMLParseHelper {
         region.setItemDownloadRootUrl("");
 
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
-            String tmp = "";
+            //String tmp = "";
             switch (parser.getEventType()) {
                 // document start
                 case XmlPullParser.START_DOCUMENT:
@@ -68,9 +62,6 @@ public class XMLParseHelper {
 
                 case XmlPullParser.START_TAG:
 
-                    /*Log.d(Prefs.TAG, "START_TAG: name = " + parser.getName()
-                            + ", depth = " + parser.getDepth() + ", attrCount = "
-                            + parser.getAttributeCount());*/
                     //child
                     if (parser.getDepth() > region.getDepth() + 1) {
                         region = child;
@@ -82,17 +73,13 @@ public class XMLParseHelper {
                         child.setDepth(parser.getDepth());
                         child.setMapAvailable(true);
                         child.setDownloadingStatus(DownloadingStatus.NOT_DOWNLOADED);
-                        //child.setItemDownloadUrl("Denmark_europe_2.obf.zip");
                         for (int i = 0; i < parser.getAttributeCount(); i++) {
                             if (parser.getAttributeName(i).equals(ATTR_NAME)) {
-                                tmp += " " + parser.getAttributeValue(i);
                                 child.setRegionName(parser.getAttributeValue(i));
                                 child.setItemDownloadRootUrl(region.getItemDownloadRootUrl());
                                 //Log.d(Prefs.TAG, parser.getDepth() + " " + parser.getAttributeValue(i));
-                                //i = parser.getAttributeCount();
                             }
                             else if (parser.getAttributeName(i).equals(ATTR_MAP)) {
-                                map = " map = " + parser.getAttributeValue(i);
                                 child.setMapAvailable(parser.getAttributeValue(i).equals("yes") ? true : false);
                                 //Log.d(Prefs.TAG, parser.getDepth() + " " + parser.getAttributeValue(i));
                             }
@@ -107,27 +94,19 @@ public class XMLParseHelper {
                             filename.append(FILE_EXT);
                             child.setItemDownloadRootUrl(filename.toString());
 
-                            //ItemDownloadRootUrl=europe_2.obf.zip
+                            //ItemDownloadRootUrl=>europe_2.obf.zip
                         }
                         if (parser.getDepth() > 2) {
                             StringBuilder filename = new StringBuilder(region.getItemDownloadUrl());
                             filename.append(child.getRegionName());
                             filename.append(FILE_);
                             child.setItemDownloadUrl(filename.toString());
-                            //ItemDownloadUrl=denmark_
+                            //ItemDownloadUrl=>denmark_
                         }
-                        //Log.d(Prefs.TAG, getClass().getSimpleName() + " root= "+region.getItemDownloadRootUrl() );
+
                         region.addChildren(child);
                     }
 
-                    tmp += " " + parser.getDepth();
-
-                    tmp += map;
-                    if (!tmp.isEmpty()) {
-                        //Log.d(Prefs.TAG, "Attributes: " + tmp);
-
-                        //Log.d(Prefs.TAG, tmp);
-                    }
                     break;
 
                 case XmlPullParser.END_TAG:
@@ -145,7 +124,7 @@ public class XMLParseHelper {
                     name = child.getRegionName();
                     name = capitalize(name);
                     child.setRegionName(name);
-                    Log.d(Prefs.TAG, getClass().getSimpleName() +" ItemDownloadUrl = " +child.getRegionName()+ " " +child.getItemDownloadUrl());
+                    //Log.d(Prefs.TAG, getClass().getSimpleName() +" ItemDownloadUrl = " +child.getRegionName()+ " " +child.getItemDownloadUrl());
                     break;
 
                 case XmlPullParser.TEXT:
