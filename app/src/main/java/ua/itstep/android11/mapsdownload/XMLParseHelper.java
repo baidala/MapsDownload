@@ -101,7 +101,8 @@ public class XMLParseHelper {
                             filename.append(child.getRegionName());
                             filename.append(FILE_);
                             child.setItemDownloadUrl(filename.toString());
-                            //ItemDownloadUrl=>denmark_
+                            //1.ItemDownloadUrl=>france_
+                            //2.ItemDownloadUrl=>france_corse_
                         }
 
                         region.addChildren(child);
@@ -117,9 +118,9 @@ public class XMLParseHelper {
                         region = region.getParent();
                     }
                     StringBuilder s = new StringBuilder(child.getItemDownloadUrl());
-                    s.append(child.getItemDownloadRootUrl());
+                    s.append(child.getItemDownloadRootUrl()); //france_corse_ + europe_2.obf.zip
                     String name = s.toString();
-                    name = capitalize(name);
+                    name = capitalize(name);  //France_corse_europe_2.obf.zip
                     child.setItemDownloadUrl(name);
                     name = child.getRegionName();
                     name = capitalize(name);
