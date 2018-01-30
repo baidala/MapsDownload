@@ -132,6 +132,14 @@ public class DownloadDialog extends DialogFragment implements ItemDownloadCallba
 
     }
 
+    public void performCleanUp() {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" performCleanUp");
+        mItemDownloadPercentObserver.performCleanUp();
+        mDownloadRequestsSubscriber.performCleanUp();
+    }
+
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -144,7 +152,11 @@ public class DownloadDialog extends DialogFragment implements ItemDownloadCallba
         if(Prefs.DEBUG) Log.d(Prefs.TAG, getClass().getSimpleName() + " onPause ");
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        performCleanUp();
+    }
 
     private String formatSize(float size) {
 
