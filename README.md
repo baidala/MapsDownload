@@ -1,6 +1,7 @@
-# MapsDownload (RxJava2, DownloadManager, Fragment, RecyclerView )
+# MapsDownload 
+(RxJava2, DownloadManager, Fragment, RecyclerView )
 
-http://osmand.net/  (C) 2017
+http://osmand.net/  (C) 2018
 
 Тестовое задание:
 
