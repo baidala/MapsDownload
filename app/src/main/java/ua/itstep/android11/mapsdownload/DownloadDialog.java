@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
  * Created by Maksim Baydala on 29/01/18.
  */
 
-public class DownloadDialog extends DialogFragment {
+public class DownloadDialog extends DialogFragment implements ItemDownloadCallback, ItemPercentCallback {
 
     private static final String ARG_PARAM = "region";
 
@@ -27,6 +27,8 @@ public class DownloadDialog extends DialogFragment {
     private TextView tvRegion;
     private TextView tvProgress;
     private ProgressBar progressBar;
+    private ItemDownloadPercentObserver mItemDownloadPercentObserver;
+    private DownloadRequestsSubscriber mDownloadRequestsSubscriber;
 
 
     public static DownloadDialog newInstance(RegionModel region) {
@@ -76,8 +78,42 @@ public class DownloadDialog extends DialogFragment {
                         dismiss();
                     }
                 });
+        //Observable for percent of individual downloads.
+        mItemDownloadPercentObserver = new ItemDownloadPercentObserver(this);
+        //Observable for download request
+        mDownloadRequestsSubscriber = new DownloadRequestsSubscriber(this);
+        onDownloadEnqueued(region);
 
         return builder.create();
+    }
+
+    @Override
+    public void onDownloadEnqueued(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadEnqueued" );
+        mDownloadRequestsSubscriber.emitNextItem(downloadableItem);
+    }
+
+    @Override
+    public void onDownloadStarted(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadStarted" );
+        updateDownloadableItem(downloadableItem);
+
+    }
+
+    @Override
+    public void onDownloadCompleted() {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadCompleted" );
+    }
+
+    @Override
+    public void onDownloadCanceled(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" onDownloadCanceled" );
+    }
+
+    @Override
+    public void updateDownloadableItem(RegionModel downloadableItem) {
+        Log.d(Prefs.TAG, getClass().getSimpleName() +" updateDownloadableItem" );
+        progressBar.setProgress(downloadableItem.getItemDownloadPercent());
     }
 
     @Override

@@ -13,21 +13,20 @@ import java.util.ArrayList;
  */
 
 public class RegionModel implements Parcelable {
+    private int itemDownloadPercent;
+    private int depth;
+    private int id;
     private long downloadId;
+    private long lastEmittedDownloadPercent = -1;
     private String regionName = "";
-    private int progress = 0;
+    private String itemDownloadUrl = "";
+    private String itemDownloadRootUrl = "";
     private float currentFileSize;
     private float totalFileSize;
     private boolean isMapAvailable = false;
     private DownloadingStatus downloadingStatus;
-    private String itemDownloadUrl;
-    private int itemDownloadPercent;
-    private long lastEmittedDownloadPercent = -1;
-    private int depth;
-    private int id;
     private ArrayList<RegionModel> children = new ArrayList<>();
     private RegionModel parent;
-
 
 
     public RegionModel(Parcel in) {
@@ -63,7 +62,6 @@ public class RegionModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(depth);
         dest.writeString(regionName);
-        dest.writeInt(progress);
         dest.writeFloat(currentFileSize);
         dest.writeFloat(totalFileSize);
         dest.writeList(children);
@@ -184,5 +182,13 @@ public class RegionModel implements Parcelable {
 
     public int getId() {
         return id;
+    }
+
+    public String getItemDownloadRootUrl() {
+        return itemDownloadRootUrl;
+    }
+
+    public void setItemDownloadRootUrl(String itemDownloadRootUrl) {
+        this.itemDownloadRootUrl = itemDownloadRootUrl;
     }
 }

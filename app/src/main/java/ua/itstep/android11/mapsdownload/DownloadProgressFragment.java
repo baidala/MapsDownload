@@ -20,7 +20,8 @@ import android.widget.TextView;
  * Use the {@link DownloadProgressFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DownloadProgressFragment extends Fragment  implements View.OnClickListener {
+public class DownloadProgressFragment extends Fragment  implements View.OnClickListener
+         {
 
     private static final String ARG_PARAM = "region";
 
@@ -30,6 +31,7 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
     private TextView tvCountry;
     private TextView tvProgress;
     private ProgressBar progressBar;
+
 
 
     public DownloadProgressFragment() {
@@ -45,6 +47,7 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
      */
     public static DownloadProgressFragment newInstance(RegionModel region) {
         Log.d(Prefs.TAG, " DownloadProgressFragment");
+
 
         DownloadProgressFragment fragment = new DownloadProgressFragment();
         Bundle args = new Bundle();
@@ -79,6 +82,8 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
         progressBar.setVisibility(View.VISIBLE);
         view.setOnClickListener(this);
 
+
+
         return view;
     }
 
@@ -89,7 +94,10 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
         DownloadDialog dialog = DownloadDialog.newInstance(region);
         dialog.show(getFragmentManager(), "DownloadDialog");
 
+
+
     }
+
 
 
     @Override
