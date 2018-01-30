@@ -1,4 +1,4 @@
-# MapsDownload
+# MapsDownload (RxJava2, DownloadManager, Fragment, RecyclerView )
 
 http://osmand.net/  (C) 2017
 
