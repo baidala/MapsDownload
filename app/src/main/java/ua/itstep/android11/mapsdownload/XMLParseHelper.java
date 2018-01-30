@@ -47,9 +47,6 @@ public class XMLParseHelper {
     private synchronized void parseXML() throws IOException, XmlPullParserException {
 
         XmlPullParser parser = prepareXpp();
-        //parser.setInput(stream, "UTF-8");
-        //parser();
-
 
         String map = " map = yes";
         int depth = 1;
@@ -57,21 +54,14 @@ public class XMLParseHelper {
         //<region_list>
         region.setDepth(depth);
 
-        /*
-        if (parser.next() != XmlPullParser.END_DOCUMENT) {
-
-            Log.d(Prefs.TAG, "<region_list> " + parser.getName() + " "+ parser.getDepth() );
-        }*/
-
-
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
             String tmp = "";
             switch (parser.getEventType()) {
-                // начало документа
+                // document start
                 case XmlPullParser.START_DOCUMENT:
                     Log.d(Prefs.TAG, "START_DOCUMENT");
                     break;
-                // начало тэга
+                
                 case XmlPullParser.START_TAG:
 
                     /*Log.d(Prefs.TAG, "START_TAG: name = " + parser.getName()
@@ -119,14 +109,12 @@ public class XMLParseHelper {
                         Log.d(Prefs.TAG, tmp);
                     }
                     break;
-                // конец тэга
                 case XmlPullParser.END_TAG:
                     Log.d(Prefs.TAG, "END_TAG: = " + parser.getDepth());
                     if (parser.getDepth() == region.getDepth()) {
                         region = region.getParent();
                     }
                     break;
-                // содержимое тэга
                 case XmlPullParser.TEXT:
                     //Log.d(Prefs.TAG, "text = " + parser.getText());
                     break;

@@ -4,27 +4,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
-    private final String ATTR_CODE = "M49code";
-
-    ExpandableListView elvMain;
-    ExpandableListAdapter adapter;
-    AdapterHelper adptrHelper;
-    TextView tvDevMemory;
-    TextView tvFree;
-    TextView tvSize;
-    XMLParseHelper xmlParseHelper;
-    RegionModel root;
+    private XMLParseHelper xmlParseHelper;
+    private RegionModel root;
     private FreespaceFragment freespace;
 
     @Override
@@ -59,10 +47,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 .add(R.id.list_container, RecyclerViewFragment.newInstance(root), "world")
                 .commit();
 
-        adptrHelper = new AdapterHelper(this);
-        adapter = adptrHelper.getAdapter();
 
     } //onCreate
+
 
     @Override
     public void onBackPressed() {

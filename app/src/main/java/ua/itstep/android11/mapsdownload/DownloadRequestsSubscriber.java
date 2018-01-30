@@ -9,7 +9,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Maksim Baydala on 26/01/18.

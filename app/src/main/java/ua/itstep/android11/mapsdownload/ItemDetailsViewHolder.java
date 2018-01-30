@@ -25,12 +25,10 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
     private ImageView imageIcon;
     private ImageView imageDownload;
     private ProgressBar progressBar;
-    //private String m49code ;
     private final OnFragmentInteractionListener listener;
 
     public ItemDetailsViewHolder(final View itemView, Context context, ItemDownloadCallback callback, OnFragmentInteractionListener lstnr) {
         super(itemView);
-
 
         this.mView = itemView;
         this.listener = lstnr;
@@ -54,11 +52,7 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
         this.context = context;
         this.callback = callback;
         //Log.d(Prefs.TAG, getClass().getSimpleName() +" ViewHolder.pos: " + getAdapterPosition());
-
-
-
     }
-
 
     //start/stop downloading
     @Override
@@ -74,18 +68,13 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
             Log.d(Prefs.TAG, getClass().getSimpleName() +" ViewHolder.imageDownload.onClick WaitingState");
             setToWaitingState();
             callback.onDownloadEnqueued(downloadableItem);
-
         }
         else if (downloadingStatus == DownloadingStatus.WAITING || downloadingStatus == DownloadingStatus.IN_PROGRESS) {
             Log.d(Prefs.TAG, getClass().getSimpleName() +" ViewHolder.imageDownload.onClick NOT_DOWNLOADED");
             setToDefaultState();
             callback.onDownloadCanceled(downloadableItem);
         }
-
-
-
     }
-
 
 
     public void updateDetails(RegionModel item) {
@@ -115,30 +104,6 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
 
         }
 
-
-
-
-
-        /*
-        imageName.setText(downloadableItem.getItemTitle());
-
-        itemCoverIcon.setImageResource(downloadableItem.getItemCoverId());
-        imageDownloadIcon.setItemId(downloadableItem.getDepth());
-        imageDownloadIcon.updateDownloadingStatus(downloadableItem.getDownloadingStatus());
-
-        if (downloadableItem.getDownloadingStatus() == DownloadingStatus.DOWNLOADED) {
-            setImageToCompletedState(downloadableItem.getDepth());
-        } else if (downloadableItem.getDownloadingStatus() == DownloadingStatus.IN_PROGRESS &&
-                downloadableItem.getItemDownloadPercent()
-                        == Constants.DOWNLOAD_COMPLETE_PERCENT) {
-            setImageToCompletedState(downloadableItem.getDepth());
-            callback.onDownloadComplete();
-        } else if (downloadableItem.getDownloadingStatus() == DownloadingStatus.IN_PROGRESS) {
-            setImageInProgressState(downloadableItem.getItemDownloadPercent(), downloadableItem.getDepth());
-        }*/
-
-
-
     }
 
     private void setRootState() {
@@ -146,7 +111,6 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
         imageDownload.setImageResource(R.drawable.ic_action_import);
         progressBar.setVisibility(View.GONE);
         imageDownload.setVisibility(View.GONE);
-
     }
 
 
@@ -157,11 +121,6 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
         if(downloadableItem.isMapAvailable()) {
             imageDownload.setVisibility(View.VISIBLE);
         } else {  imageDownload.setVisibility(View.GONE); }
-        /*if (!downloadableItem.getDepth().equalsIgnoreCase(itemId)) {
-            return;
-        }
-        imageDownloadIcon.updateDownloadingStatus(DownloadingStatus.WAITING);
-        */
     }
 
     private void setToCompletedState() {
@@ -170,11 +129,6 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
         progressBar.setVisibility(View.GONE);
         imageDownload.setImageResource(R.drawable.ic_action_import);
         imageDownload.setVisibility(View.VISIBLE);
-        /*if (!downloadableItem.getDepth().equalsIgnoreCase(itemId)) {
-            return;
-        }
-        imageDownloadIcon.updateDownloadingStatus(DownloadingStatus.DOWNLOADED);
-        */
     }
 
     private void setInProgressState() {
@@ -183,14 +137,6 @@ public class ItemDetailsViewHolder extends RecyclerView.ViewHolder
         progressBar.setProgress(downloadableItem.getItemDownloadPercent());
         progressBar.setVisibility(View.VISIBLE);
         Log.d(Prefs.TAG, getClass().getSimpleName() +" setInProgressState =" + downloadableItem.getItemDownloadPercent());
-
-        /*
-        if (!downloadableItem.getDepth().equalsIgnoreCase(itemId)) {
-            return;
-        }
-        imageDownloadIcon.updateProgress(context, progress);
-        imageDownloadIcon.updateDownloadingStatus(DownloadingStatus.IN_PROGRESS);
-        */
     }
 
     private void setToWaitingState() {

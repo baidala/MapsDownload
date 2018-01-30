@@ -38,8 +38,6 @@ public class RxDownloadManagerHelper {
             return INVALID_DOWNLOAD_ID;
         }
         String url = BASE_URL + downloadUrl;
-        //String url = "http://developer.android.com/images/home/android-jellybean.png";
-        //downloadUrl = "android-jellybean.png";
 
         Uri uri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -80,6 +78,9 @@ public class RxDownloadManagerHelper {
         if (downloadableResult == null) {
             return;
         }
+
+        downloadableItem.setCurrentFileSize(downloadableResult.getBytesDownloaded());
+        downloadableItem.setTotalFileSize(downloadableResult.getBytesTotal());
 
         //Get the current DownloadPercent and download status
         int currentDownloadPercent = downloadableResult.getPercent();
@@ -166,6 +167,7 @@ public class RxDownloadManagerHelper {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadId);
 
+
         //Create an instance of downloadable result
         DownloadableResult downloadableResult = new DownloadableResult();
 
@@ -180,6 +182,10 @@ public class RxDownloadManagerHelper {
                     cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
             float bytesTotal =
                     cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+
+            downloadableResult.setBytesDownloaded(bytesDownloaded);
+            downloadableResult.setBytesTotal(bytesTotal);
+
             int downloadPercent = (int) ((bytesDownloaded / bytesTotal) * PERCENT_MULTIPLIER);
             if (downloadPercent <= Prefs.DOWNLOAD_COMPLETE_PERCENT) {
                 downloadableResult.setPercent(downloadPercent);

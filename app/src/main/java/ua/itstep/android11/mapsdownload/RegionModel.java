@@ -16,11 +16,8 @@ public class RegionModel implements Parcelable {
     private long downloadId;
     private String regionName = "";
     private int progress = 0;
-    private long currentFileSize;
-    private long totalFileSize;
-    private String m49code = "";
-    private boolean isLoaded = false;
-    private boolean inProgress = false;
+    private float currentFileSize;
+    private float totalFileSize;
     private boolean isMapAvailable = false;
     private DownloadingStatus downloadingStatus;
     private String itemDownloadUrl;
@@ -36,22 +33,18 @@ public class RegionModel implements Parcelable {
     public RegionModel(Parcel in) {
         super();
         if (in != null) {
-
             depth = in.readInt();
             regionName = in.readString();
             itemDownloadPercent = in.readInt();
-            currentFileSize = in.readInt();
-            totalFileSize = in.readInt();
-            m49code = in.readString();
-            isLoaded = in.readByte() != 0;
-            inProgress = in.readByte() != 0;
+            currentFileSize = in.readFloat();
+            totalFileSize = in.readFloat();
             //parent = in.readParcelable(this); todo
         }
     }
 
     public RegionModel() {
         super();
-        //children = new ArrayList<>();
+
     }
 
     public static final Creator<RegionModel> CREATOR = new Creator<RegionModel>() {
@@ -71,11 +64,8 @@ public class RegionModel implements Parcelable {
         dest.writeInt(depth);
         dest.writeString(regionName);
         dest.writeInt(progress);
-        dest.writeLong(currentFileSize);
-        dest.writeLong(totalFileSize);
-        dest.writeString(m49code);
-        dest.writeByte((byte) (isLoaded ? 1 : 0));
-        dest.writeByte((byte) (inProgress ? 1 : 0));
+        dest.writeFloat(currentFileSize);
+        dest.writeFloat(totalFileSize);
         dest.writeList(children);
         if (null != parent) {
             //dest.writeParcelable(parent, 1); todo stackoverFlow
@@ -87,64 +77,31 @@ public class RegionModel implements Parcelable {
         return 0;
     }
 
-    public int getProgress(){
-        return this.progress;
-    }
-
     public String getRegionName() {
         return this.regionName;
-    }
-
-    public boolean isInProgress() {
-        return this.inProgress;
-    }
-
-    public String getM49code() {
-        return this.m49code;
-    }
-
-    public boolean isLoaded() {
-        return this.isLoaded;
-    }
-
-    public void setIsLoaded(boolean isLoading) {
-        this.isLoaded = isLoading;
     }
 
     public void setRegionName(String regionName) {
         this.regionName = regionName;
     }
 
-    public void setProgress(int progress) {
-        if(progress > 0){
-            this.progress = progress;
-        }
 
-    }
-
-    public long getCurrentFileSize() {
+    public float getCurrentFileSize() {
         return currentFileSize;
     }
 
-    public void setCurrentFileSize(long currentFileSize) {
+    public void setCurrentFileSize(float currentFileSize) {
         this.currentFileSize = currentFileSize;
     }
 
-    public long getTotalFileSize() {
+    public float getTotalFileSize() {
         return totalFileSize;
     }
 
-    public void setTotalFileSize(long totalFileSize) {
+    public void setTotalFileSize(float totalFileSize) {
         this.totalFileSize = totalFileSize;
     }
 
-    public void setInProgress(boolean inProgress) {
-        this.inProgress = inProgress;
-    }
-
-    public void setM49code(String m49code) {
-        this.m49code = m49code;
-    }
 
     public DownloadingStatus getDownloadingStatus() {
         return downloadingStatus;
