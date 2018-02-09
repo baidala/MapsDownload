@@ -25,13 +25,4 @@ public enum DownloadingStatus {
         return downloadStatus;
     }
 
-    public static DownloadingStatus getValue(String status) {
-        for (DownloadingStatus downloadingStatus : DownloadingStatus.values()) {
-            if (downloadingStatus.getDownloadStatus().equalsIgnoreCase(status)) {
-                return downloadingStatus;
-            }
-        }
-        return null;
-    }
-
 }
