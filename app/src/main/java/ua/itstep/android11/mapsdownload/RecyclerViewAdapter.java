@@ -45,7 +45,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         //Observable for download request
         mDownloadRequestsSubscriber = new DownloadRequestsSubscriber(this);
 
-        itemModelsList = region.getChildren();
+        itemModelsList = (ArrayList<RegionModel>) region.getChildren();
     }
 
 

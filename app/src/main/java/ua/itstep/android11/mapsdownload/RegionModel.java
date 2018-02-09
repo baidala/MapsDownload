@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -137,7 +138,7 @@ public class RegionModel implements Parcelable {
         children.add(region);
     };
 
-    public ArrayList<RegionModel> getChildren() {
+    public List<RegionModel> getChildren() {
         return children;
     };
 
