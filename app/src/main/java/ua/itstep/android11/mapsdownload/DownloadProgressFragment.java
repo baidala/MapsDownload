@@ -25,7 +25,6 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
 
     private static final String ARG_PARAM = "region";
 
-    private OnFragmentInteractionListener mListener;
     private RegionModel region;
     private TextView tvDownload;
     private TextView tvCountry;
@@ -47,7 +46,6 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
      */
     public static DownloadProgressFragment newInstance(RegionModel region) {
         Log.d(Prefs.TAG, " DownloadProgressFragment");
-
 
         DownloadProgressFragment fragment = new DownloadProgressFragment();
         Bundle args = new Bundle();
@@ -82,8 +80,6 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
         progressBar.setVisibility(View.VISIBLE);
         view.setOnClickListener(this);
 
-
-
         return view;
     }
 
@@ -94,8 +90,6 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
         DownloadDialog dialog = DownloadDialog.newInstance(region);
         dialog.show(getFragmentManager(), "DownloadDialog");
 
-
-
     }
 
 
@@ -103,18 +97,12 @@ public class DownloadProgressFragment extends Fragment  implements View.OnClickL
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
